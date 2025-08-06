@@ -1,0 +1,56 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+Sign In
+{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col"></div>
+    <div class="col-12 col-md-8 col-lg-6 p-4">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title p-4">Sign In</h2>
+
+                {% if messages %}
+                  {% for message in messages %}
+                    <div class="alert {{message.tags}} d-flex align-items-center" role="alert" style="position: relative;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                    </svg>
+                    <div style="padding: 0px 10px;">
+                        {{message}}
+                    </div>
+                    <span class="x_icons" onclick="remove_parent(this)">✕</span>
+                </div>
+                  {% endfor %}
+                {% endif %}
+                
+
+                <form action="{% url 'accounts:sign_in_view' %}" method="post" class="card-text mt-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username" class="form-label">User Name</label>
+                        <input type="text" class="form-control" id="username" placeholder="username..." name="username">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="password..."
+                            name="password">
+                    </div>
+
+                    <div class="mb-3 text-end pt-1 w-100">
+                        <button type="submit" class="btn_style">Sign In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col"></div>
+</div>
+
+{% endblock content %}

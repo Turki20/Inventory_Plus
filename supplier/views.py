@@ -73,7 +73,7 @@ def update_supplier_view(request: HttpRequest, supplier_id: int):
         phone = request.POST.get('phone')
         address = request.POST.get('address')
 
-        if not all([name, email, phone]):
+        if not all([name, phone]):
             messages.error(request, 'Some required fields are missing', 'alert-danger')
             return redirect('supplier:update_supplier_view', supplier_id)
 
@@ -88,3 +88,15 @@ def update_supplier_view(request: HttpRequest, supplier_id: int):
 
     return render(request, 'supplier/update_supplier.html', {"supplier": supplier})
 
+
+def delete_supplier(request:HttpRequest, supplier_id):
+    
+    try:
+        Supplier.objects.get(pk = supplier_id).delete()
+        messages.success(request, 'The Supplier has been successfully removed.', 'alert-success')
+        return redirect('supplier:all_suppliers_view')
+
+    except Exception as e:
+        messages.error(request, 'An error occurred while deleting.', 'alert-danger')
+        return redirect('supplier:all_suppliers_view')
+    

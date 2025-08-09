@@ -54,13 +54,29 @@
         <p>Min quantity alert: <strong>{{product.min_quantity_alert}}</strong></p>
         <p>Cost price: <strong>{{product.cost_price}}</strong></p>
         <p>Selling_price: <strong>{{product.selling_price}}</strong></p>
+        <div class="row">
+            <form class="col-12" action="{% url 'supplier:all_suppliers_view' %}" method="post">
+                {% csrf_token %}
+                <label for="">supllier: <strong>{{product.supplier.name}}</strong></label>
+                <input type="text" name="search" hidden value="{{product.supplier.name}}">
+                <button type="submit" style="background: none; border: none; margin-left: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2" />
+                    </svg>
+                </button>
+            </form>
+        </div>
         <p>Created at: <strong>{{product.created_at}}</strong></p>
         <p>Updated at: <strong>{{product.updated_at}}</strong></p>
     </div>
 
     <div class="col-12 d-flex p-2">
-        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" type="button">Delete</button>
-        <a href="{% url 'product:update_product_view' product.id %}" style="margin-left: 20px;"><button class="btn btn-outline-warning">Update</button></a>
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal"
+            type="button">Delete</button>
+        <a href="{% url 'product:update_product_view' product.id %}" style="margin-left: 20px;"><button
+                class="btn btn-outline-warning">Update</button></a>
     </div>
 
     <!-- Modal -->

@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpRequest
 from .models import Product, Category
 from django.db.models import Sum, F
 from django.contrib import messages
 from django.core.paginator import Paginator
+from supplier.models import Supplier
 # Create your views here.
 
 
@@ -70,7 +71,15 @@ def add_product_view(request:HttpRequest):
             messages.error(request, 'category does not exisit', 'alert-danger')
             return redirect('product:add_product_view')
 
-        supplier = None
+        try:
+            if supplier_id is not None:
+                supplier = Supplier.objects.get(pk=supplier_id)
+            else:
+                supplier = None
+        except Supplier.DoesNotExist:
+            messages.error(request, 'supplier does not exisit', 'alert-danger')
+            return redirect('product:add_product_view')
+        
 
         if image is not None:
             Product.objects.create(
@@ -101,7 +110,8 @@ def add_product_view(request:HttpRequest):
 
     
     all_categories = Category.objects.all()
-    return render(request, 'product/add_product.html', {'all_categories': all_categories})
+    all_supplier = Supplier.objects.all()
+    return render(request, 'product/add_product.html', {'all_categories': all_categories, 'all_supplier':all_supplier})
 
 
 def product_detail_view(request:HttpRequest, product_id):
@@ -147,7 +157,14 @@ def update_product_view(request:HttpRequest, product_id:int):
             messages.error(request, 'category does not exisit', 'alert-danger')
             return redirect('product:update_product_view', id)
 
-        supplier = None
+        try:
+            if supplier_id is not None:
+                supplier = Supplier.objects.get(pk=supplier_id)
+            else:
+                supplier = None
+        except Supplier.DoesNotExist:
+            messages.error(request, 'supplier does not exisit', 'alert-danger')
+            return redirect('product:update_product_view')
 
         if image is not None:
             product = Product.objects.get(pk = int(id))
@@ -178,7 +195,71 @@ def update_product_view(request:HttpRequest, product_id:int):
     
     product = Product.objects.get(pk = product_id)
     all_categories = Category.objects.all()
+    all_supplier = Supplier.objects.all()
 
-    return render(request, 'product/update_product.html', {"product": product, 'all_categories': all_categories})
+    return render(request, 'product/update_product.html', {"product": product, 'all_categories': all_categories, 'all_supplier': all_supplier})
 
 
+# Category --
+def all_category_view(request: HttpRequest):
+    categories = Category.objects.all().order_by('-created_at')
+    return render(request, 'product/all_category.html', {"categories": categories})
+
+
+# إضافة فئة
+def add_category_view(request: HttpRequest):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+
+        if not name:
+            messages.error(request, 'Category name is required', 'alert-danger')
+            return redirect('product:add_category_view')
+
+        if Category.objects.filter(name=name).exists():
+            messages.error(request, 'Category already exists', 'alert-danger')
+            return redirect('product:add_category_view')
+
+        Category.objects.create(name=name, description=description)
+        messages.success(request, 'Category added successfully', 'alert-success')
+        return redirect('product:all_category_view')
+
+    return render(request, 'product/add_category.html')
+
+
+def update_category_view(request: HttpRequest, category_id: int):
+    category = get_object_or_404(Category, pk=category_id)
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+
+        if not name:
+            messages.error(request, 'Category name is required', 'alert-danger')
+            return redirect('product:update_category_view', category_id)
+
+        if Category.objects.exclude(pk=category_id).filter(name=name).exists():
+            messages.error(request, 'Another category with this name already exists', 'alert-danger')
+            return redirect('product:update_category_view', category_id)
+
+        category.name = name
+        category.description = description
+        category.save()
+
+        messages.success(request, 'Category updated successfully', 'alert-success')
+        return redirect('product:all_category_view')
+
+    return render(request, 'product/update_category.html', {"category": category})
+
+
+
+def delete_category(request:HttpRequest, category_id):
+    
+    try:
+        Category.objects.get(pk = category_id).delete()
+        messages.success(request, 'The category has been successfully removed.', 'alert-success')
+        return redirect('product:all_category_view')
+
+    except Exception as e:
+        messages.error(request, 'An error occurred while deleting.', 'alert-danger')
+        return redirect('product:all_category_view')

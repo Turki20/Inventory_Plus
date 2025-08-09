@@ -1,0 +1,46 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %} Update User {% endblock title %}
+
+{% block content %}
+
+<div class="row p-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{message.tags}}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="row p-4">
+    <div class="col p-4">
+        <form method="post" action="{% url 'user:update_user_view' user_obj.id %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" value="{{ user_obj.username }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control" value="{{ user_obj.first_name }}" placeholder="first name...">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control" value="{{ user_obj.last_name }}" placeholder="last name...">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ user_obj.email }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password (leave empty to keep current)</label>
+                <input type="password" name="password" class="form-control" placeholder="New password">
+            </div>
+            <button type="submit" class="btn w-100 btn_style">Update User</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -90,8 +90,9 @@ Add Product
                 <label for="supplier" class="form-label">Supplier</label>
                 <select class="form-select" id="supplier" name="supplier">
                     <option selected disabled>Select a supplier</option>
-                    <option value="1">Supplier 1</option>
-                    <option value="2">Supplier 2</option>
+                    {% for supplier in all_supplier %}
+                    <option value="{{supplier.id}}" {% if supplier == product.supplier %}selected{% endif %}>{{supplier}}</option>
+                    {% endfor %}
                 </select>
             </div>
 

@@ -147,8 +147,9 @@ main .card {
 .btn_style {
     padding: 7px 20px;
     border-radius: 3px;
-    background: #555CB8;
-    background: linear-gradient(131deg, rgba(85, 92, 184, 1) 0%, #00ac9a 100%);
+    /* background: #555CB8;
+    background: linear-gradient(131deg, rgba(85, 92, 184, 1) 0%, #00ac9a 100%); */
+    background-color: var(--hover_color);
     color: white;
     width: auto;
     border: none;
@@ -166,10 +167,49 @@ main .card {
 }
 
 .x_icons {
-    background-color: #f8d7da;
-    color: #842029;
     font-weight: 1000;position: absolute;
     right: 10px;
     padding: 5px;
     cursor: pointer;
+}
+
+.icon {
+    text-decoration: none;
+    color: var(--hover_color);
+    padding: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+.icon:hover {
+    transform: scale(1.05);
+}
+
+.icon svg {
+    width: 25px;
+    fill: var(--hover_color);
+}
+
+.card_style {
+    background: #555CB8;
+    background: linear-gradient(131deg, rgba(85, 92, 184, 1) 0%, #00ac9a 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none !important;
+    height: 100%;
+}
+
+.card_style a {
+    padding: 30px;
+    width: 100%;
+    text-decoration: none;
+    font-size: 24px;
+    color: var(--bacground_color);
+    font-weight: 1000;
+}
+
+.center_content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

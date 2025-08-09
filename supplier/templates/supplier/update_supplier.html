@@ -1,0 +1,59 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %} Update Supplier {% endblock title %}
+
+{% block content %}
+
+<div class="row p-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{message.tags}} d-flex align-items-center" role="alert" style="position: relative;">
+                {% if message.tags == 'alert-success' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14"/>
+                        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 1 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                    </svg>
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                    </svg>
+                {% endif %}
+                <div style="padding: 0px 10px;">{{message}}</div>
+                <span class="x_icons" onclick="remove_parent(this)">✕</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="row p-4">
+    <div class="col p-4">
+        <form action="{% url 'supplier:update_supplier_view' supplier.id %}" method="post">
+            {% csrf_token %}
+            <input type="number" value="{{supplier.id}}" hidden name="id">
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Supplier Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{supplier.name}}" required>
+            </div>
+
+              <div class="mb-3">
+                <label for="phone" class="form-label">Supplier Phone</label>
+                <input type="text" class="form-control" id="phone" name="phone" value="{{supplier.phone}}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Supplier Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{supplier.email}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="address" class="form-label">Supplier Address</label>
+                <input type="text" class="form-control" id="address" name="address" value="{{supplier.address}}">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn_style">Update Supplier</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

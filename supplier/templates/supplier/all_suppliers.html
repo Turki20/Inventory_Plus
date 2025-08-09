@@ -1,0 +1,150 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %}
+Suppliers
+{% endblock title %}
+
+{% block content %}
+<div class="row p-4">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {{message.tags}} d-flex align-items-center" role="alert" style="position: relative;">
+        {% if message.tags == 'alert-success' %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="currentColor" class="bi bi-check-circle"
+            viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14" />
+            <path
+                d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 1 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05" />
+        </svg>
+        {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="currentColor" class="bi bi-exclamation-triangle-fill"
+            viewBox="0 0 16 16">
+            <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z" />
+        </svg>
+        {% endif %}
+        <div style="padding: 0px 10px;">{{message}}</div>
+        <span class="x_icons" onclick="remove_parent(this)">✕</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<div class="row p-4">
+    <h3 class="col-10 col-md-10">Suppliers Management</h3>
+    <div class="col-2">
+        <a href="{% url 'supplier:add_supplier_view' %}" class=""><button class="btn btn_style"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
+  <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+  <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+</svg> Add Supplier</button></a>
+    </div>
+</div>
+
+<div class="row p-4 g-3">
+    <div class="col-md-4">
+        <div class="card p-2">
+            <div class="card-title">
+                <h3>Number of Suppliers</h3>
+            </div>
+            <div class="card-text center_content">
+                <p style="font-size: 30px; font-weight: bold;">
+                    {{ number_of_suppliers }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <form action="{% url 'supplier:all_suppliers_view' %}" method="post" class="row g-3 p-2">
+            {% csrf_token %}
+            <div class="col-12 col-md-12">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Search</span>
+                    <input type="text" class="form-control" placeholder="Search suppliers..." name="search">
+                </div>
+            </div>
+            <div class="col-12 col-md-10">
+                <select class="form-select" name="order_by">
+                    <option value="none" selected>Order By</option>
+                    <option value="latest">Latest Added</option>
+                    <option value="oldest">Oldest Added</option>
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn_style w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row p-4">
+    {% for supplier in suppliers %}
+    <div class="col-12 col-md-4 col-lg-3 mb-2">
+        <div class="card p-2">
+            <div class="card-title mt-2">
+                <h6>{{ supplier.name }}</h6>
+            </div>
+            <div class="card-text">
+                <p>Phone: <strong>{{ supplier.phone|default:"-" }}</strong></p>
+                <p>Email: <strong>{{ supplier.email|default:"-" }}</strong></p>
+                <p>Website:
+                    {% if supplier.website %}
+                    <a href="{{ supplier.website }}" target="_blank">Visit</a>
+                    {% else %}
+                    <span>-</span>
+                    {% endif %}
+                </p>
+                <p>Address: {{ supplier.address|default:"-" }}</p>
+                <small class="text-muted">Created: {{ supplier.created_at|date:"Y-m-d" }}</small>
+            </div>
+            <div class="card-footer mt-2">
+                <a href="{% url 'supplier:update_supplier_view' supplier.id %}"><button
+                        class="btn btn-outline-warning"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path
+                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                            <path fill-rule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                        </svg></button></a>
+                <a href=""><button class="btn btn-outline-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16"
+                            height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                        </svg></button></a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>No suppliers found.</p>
+    {% endfor %}
+</div>
+
+<div class="row p-4">
+    <div class="col"></div>
+    <div class="col text-center rounded p-2"
+        style="font-size: 24px; background-color: white; display: flex; justify-content: space-evenly; border: 2px dashed lightgray;">
+        <div>
+            {% if suppliers.has_previous %}
+            <a href="?page={{ suppliers.previous_page_number }}">
+                &laquo; Previous
+            </a>
+            {% endif %}
+        </div>
+        <div>
+            <span>{{ suppliers.number }}</span>
+            <span>from</span>
+            <span>{{ suppliers.paginator.num_pages }}</span>
+        </div>
+        <div>
+            {% if suppliers.has_next %}
+            <a href="?page={{ suppliers.next_page_number }}">
+                Next &raquo;
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col"></div>
+</div>
+
+{% endblock content %}

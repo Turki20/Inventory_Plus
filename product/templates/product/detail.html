@@ -1,0 +1,88 @@
+{% extends "main/base.html" %}
+
+{% load static %}
+
+{% block title %}
+{{product.name}}
+{% endblock title %}
+
+{% block content %}
+
+<div class="row p-4">
+
+    {% if messages %}
+    {% for message in messages %}
+
+    <div class="alert {{message.tags}} d-flex align-items-center" role="alert" style="position: relative;">
+        {% if message.tsgs == 'success' %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle"
+            viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+            <path
+                d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05" />
+        </svg>
+        {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+        </svg>
+        {% endif %}
+        <div style="padding: 0px 10px;">
+            {{message}}
+        </div>
+        <span class="x_icons" onclick="remove_parent(this)">✕</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+
+<div class="row p-4 g-2">
+    <div class="col-12 col-md-6 card p-4">
+        <img src="{{product.image.url}}" class="img-card w-100" />
+    </div>
+
+    <div class="col-12 col-md-6 card p-4">
+        <h1>{{product.name}}</h1>
+        <p style="color: gray;"><em>{{product.category}}</em></p>
+        <h6>Description</h6>
+        <p>{{product.description}}</p>
+        <hr>
+        <p>{{product.supplier.name}}</p>
+        <p>Quantity in stock: <strong>{{product.quantity_in_stock}}</strong></p>
+        <p>Min quantity alert: <strong>{{product.min_quantity_alert}}</strong></p>
+        <p>Cost price: <strong>{{product.cost_price}}</strong></p>
+        <p>Selling_price: <strong>{{product.selling_price}}</strong></p>
+        <p>Created at: <strong>{{product.created_at}}</strong></p>
+        <p>Updated at: <strong>{{product.updated_at}}</strong></p>
+    </div>
+
+    <div class="col-12 d-flex p-2">
+        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" type="button">Delete</button>
+        <a href="{% url 'product:update_product_view' product.id %}" style="margin-left: 20px;"><button class="btn btn-outline-warning">Update</button></a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm deletion</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "{{product.name}}"</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="{% url 'product:delete_product' product.id %}"><button type="button"
+                            class="btn btn-danger">Delete</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+{% endblock content %}

@@ -15,8 +15,9 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     sku = models.CharField(max_length=100, unique=True) 
+    image = models.ImageField(upload_to='images/', default='images/product_image.png')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True) # many to many
     description = models.TextField(blank=True)
     
     quantity_in_stock = models.PositiveIntegerField(default=0)

@@ -1,0 +1,170 @@
+{% extends "main/base.html" %}
+
+{% load static %}
+
+{% block title %}
+Products
+{% endblock title %}
+
+{% block content %}
+
+
+<div class="row p-4">
+
+    {% if messages %}
+    {% for message in messages %}
+
+    <div class="alert {{message.tags}} d-flex align-items-center" role="alert" style="position: relative;">
+        {% if message.tsgs == 'success' %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle"
+            viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+            <path
+                d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05" />
+        </svg>
+        {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+        </svg>
+        {% endif %}
+        <div style="padding: 0px 10px;">
+            {{message}}
+        </div>
+        <span class="x_icons" onclick="remove_parent(this)">✕</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<form action="{% url 'product:all_products_view' %}" method="post" class="row p-4 g-3">
+    {% csrf_token %}
+    <h3 class="col-12 col-md-4">Products Management</h3>
+    <div class="col-12 col-md-8">
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Search</span>
+            <input type="text" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-default" placeholder="Search..." name="search">
+        </div>
+    </div>
+    <div class="col-6 col-md-5">
+        <select name="category" class="form-select" aria-label="Default select example">
+            <option selected value="all">all</option>
+            {% for category in all_categories %}
+            <option value="{{category}}">{{category}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-6 col-md-5">
+        <select class="form-select" aria-label="Default select example" name="order_by">
+            <option value="none" selected>Order By</option>
+            <option value="highest">highest cost</option>
+            <option value="cheapest">Cheapest cost</option>
+        </select>
+    </div>
+    <div class="col">
+        <button type="submit" class="btn btn_style w-100">Search</button>
+    </div>
+</form>
+
+<div class="row p-4 g-3">
+    <div class="col col-md-4">
+        <div class="card card_style" style="border: none !important;">
+            <div class="card-title">
+                <a href="{% url 'product:add_product_view' %}" class="text-center">
+                    Add Product
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col col-md-4">
+        <div class="card p-2">
+            <div class="card-title">
+                <h3>number of products</h3>
+            </div>
+            <div class="card-text center_content">
+                <p style="font-size: 30px; font-weight: 1000;">
+                    {{number_of_products}}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="card p-2">
+            <div class="card-title">
+                <h3>Total inventory cost</h3>
+            </div>
+            <div class="card-text center_content">
+                <p style="font-size: 30px; font-weight: 1000;">
+                    {{total_inventory_cost.total_cost__sum}} SAR
+                </p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row p-4">
+
+    {% for product in products %}
+    <div class="col-12 col-md-4 col-lg-3 mb-2">
+        <div class="card p-2">
+            <img class="card-img-top" src="{{product.image.url}}" alt="Title" />
+            <div class="card-title mt-4">
+                <h6>{{product.name}}</h6>
+            </div>
+            <div class="card-text">
+                <span>quantity in stock: <strong>{{product.quantity_in_stock}}</strong></span>
+                <br>
+                <span class="mt-2">cost price: <strong>{{product.cost_price}}SAR</strong></span>
+                <br>
+                <div class="mt-3 w-100 text-end">
+                    <a href="{% url 'product:product_detail_view' product.id %}" class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-box-arrow-in-up-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M6.364 13.5a.5.5 0 0 0 .5.5H13.5a1.5 1.5 0 0 0 1.5-1.5v-10A1.5 1.5 0 0 0 13.5 1h-10A1.5 1.5 0 0 0 2 2.5v6.636a.5.5 0 1 0 1 0V2.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5H6.864a.5.5 0 0 0-.5.5" />
+                            <path fill-rule="evenodd"
+                                d="M11 5.5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793l-8.147 8.146a.5.5 0 0 0 .708.708L10 6.707V10.5a.5.5 0 0 0 1 0z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+
+    <div class="row p-4">
+        <div class="col"></div>
+        <div class="col text-center rounded p-2" style="font-size: 24px; background-color: white; display: flex; justify-content: space-evenly; border: 2px dashed lightgray;">
+            <div>
+                {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}"><svg xmlns="http://www.w3.org/2000/svg" width="30"
+                    height="30" fill="currentColor" class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
+                </svg></a>
+            {% endif %}
+            </div>
+            <div>
+                <span>{{ products.number }}</span>
+                <span>from</span>
+                <span>{{ products.paginator.num_pages }}</span>
+            </div>
+            <div>
+                {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}"><svg xmlns="http://www.w3.org/2000/svg" width="30"
+                    height="30" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                </svg></a>
+            {% endif %}
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+{% endblock content %}

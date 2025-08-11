@@ -29,5 +29,12 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def stock_status(self):
+        if self.quantity_in_stock == 0:
+            return "Out of stock"
+        elif self.quantity_in_stock <= self.min_quantity_alert:
+            return "Low stock"
+        return "In stock"
+    
     def __str__(self):
         return self.name

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'product',
     'supplier',
     'user',
+    'purchases_sales',
     'bootstrap5',
 ]
 

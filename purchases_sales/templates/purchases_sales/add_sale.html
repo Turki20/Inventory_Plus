@@ -1,0 +1,84 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+Add Sale
+{% endblock title %}
+
+{% block content %}
+
+<div class="row p-4">
+    <div class="col">
+        <div class="card card_style p-4" style="flex-direction: row; gap: 40px; border: none !important; color: white;">
+            <div class="larg_icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" fill="currentColor"
+                    class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                    <path
+                        d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z" />
+                    <path
+                        d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118z" />
+                </svg>
+            </div>
+            <div>
+                <h3>Add Sale</h3>
+                <p>
+                    To add a new sale, please select the sold product, enter the quantity, and optionally include the customer name. The sale date will be recorded automatically. Make sure the product and quantity are correct before saving.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row p-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{message.tags}} d-flex align-items-center" role="alert">
+                {% if message.tags == 'success' %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14"/>
+                        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                    </svg>
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                    </svg>
+                {% endif %}
+                <div style="padding: 0px 10px;">
+                    {{message}}
+                </div>
+                <span class="x_icons" onclick="remove_parent(this)">✕</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="row p-4">
+    <div class="col p-4">
+        <form action="{% url 'purchases_sales:add_sale_view' %}" method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="product" class="form-label">Product</label>
+                <select class="form-select" id="product" name="product" required>
+                    <option selected disabled>Select a product</option>
+                    {% for p in all_products %}
+                        <option value="{{ p.id }}">{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" min="1" class="form-control" id="quantity" name="quantity" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="customer_name" class="form-label">Customer Name (optional)</label>
+                <input type="text" class="form-control" id="customer_name" name="customer_name" placeholder="e.g. John Doe">
+            </div>
+
+            <button type="submit" class="btn w-100 btn_style">Add Sale</button>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

@@ -34,7 +34,7 @@ def all_products_view(request:HttpRequest):
     
     # pagination
     page = request.GET.get('page', 1)
-    paginator = Paginator(products, 8)
+    paginator = Paginator(products, 2)
     products = paginator.get_page(page)
     
     print(paginator)
@@ -56,6 +56,7 @@ def add_product_view(request:HttpRequest):
         category_id = request.POST.get('category')
         supplier_id = request.POST.get('supplier') 
         description = request.POST.get('description') 
+        min_quantity_alert = request.POST.get('min_quantity_alert')
 
         quantity = request.POST.get('quantity_in_stock')
         cost_price = request.POST.get('cost_price')
@@ -91,7 +92,8 @@ def add_product_view(request:HttpRequest):
                 description=description,
                 quantity_in_stock=int(quantity),
                 cost_price=float(cost_price),
-                selling_price=float(selling_price)
+                selling_price=float(selling_price),
+                min_quantity_alert=int(min_quantity_alert)
             )
         else:
             Product.objects.create(
@@ -102,7 +104,8 @@ def add_product_view(request:HttpRequest):
                 description=description,
                 quantity_in_stock=int(quantity),
                 cost_price=float(cost_price),
-                selling_price=float(selling_price)
+                selling_price=float(selling_price),
+                min_quantity_alert=int(min_quantity_alert)
             )
         
         messages.success(request, 'The product has been added successfully.', 'alert-success')
@@ -140,6 +143,7 @@ def update_product_view(request:HttpRequest, product_id:int):
         category_id = request.POST.get('category')
         supplier_id = request.POST.get('supplier') 
         description = request.POST.get('description') 
+        min_quantity_alert = request.POST.get('min_quantity_alert')
 
         quantity = request.POST.get('quantity_in_stock')
         cost_price = request.POST.get('cost_price')
@@ -177,6 +181,7 @@ def update_product_view(request:HttpRequest, product_id:int):
             product.quantity_in_stock=int(quantity)
             product.cost_price=float(cost_price)
             product.selling_price=float(selling_price)
+            product.min_quantity_alert=int(min_quantity_alert)
             product.save()
         else:
             product = Product.objects.get(pk = int(id))
@@ -188,6 +193,7 @@ def update_product_view(request:HttpRequest, product_id:int):
             product.quantity_in_stock=int(quantity)
             product.cost_price=float(cost_price)
             product.selling_price=float(selling_price)
+            product.min_quantity_alert=int(min_quantity_alert)
             product.save()
         
         messages.success(request, 'The product has been updated successfully.', 'alert-success')

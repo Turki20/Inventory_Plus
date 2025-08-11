@@ -5,8 +5,20 @@ from django.contrib.auth.hashers import make_password
 from django.http import HttpRequest
 
 def all_users(request):
-    users = User.objects.all().order_by('-date_joined')
-    
+    if request.method == 'POST':
+        search = request.POST.get('search', '')
+        order_by = request.POST.get('order_by', 'none')
+
+        users = User.objects.filter(username__icontains=search)
+
+        if order_by != 'none':
+            if order_by == 'latest':
+                users = users.order_by('-date_joined')
+            else:
+                users = users.order_by('date_joined')
+    else:
+        users = User.objects.all()
+        
     number_of_users = users.count()
     return render(request, 'user/all_users.html', {"users": users, 'number_of_users':number_of_users})
 

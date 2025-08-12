@@ -104,13 +104,21 @@ main {
     padding: 20px;
 }
 
+#menu_btn {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    #left_side {
+    #left_side { 
         position: absolute;
-        left: -25%; 
+        left: -75%; 
         width: 70%;
         background-color: var(--bacground_color);
         z-index: 100;
+    }
+
+    #menu_btn {
+        display: block;
     }
 }
 

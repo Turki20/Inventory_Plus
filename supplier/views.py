@@ -5,6 +5,11 @@ from django.http import HttpRequest
 from .models import Supplier
 from django.contrib import messages
 
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def all_suppliers_view(request: HttpRequest):
     if request.method == 'POST':
         search = request.POST.get('search', '')
@@ -34,9 +39,12 @@ def all_suppliers_view(request: HttpRequest):
     return render(request, 'supplier/all_suppliers.html', context)
 
 
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def add_supplier_view(request: HttpRequest):
-
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+    
     if request.method == 'POST':
         name = request.POST.get('name')
         phone = request.POST.get('phone')
@@ -63,8 +71,12 @@ def add_supplier_view(request: HttpRequest):
 
     return render(request, 'supplier/add_supplier.html')
 
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def update_supplier_view(request: HttpRequest, supplier_id: int):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+    
     supplier = get_object_or_404(Supplier, pk=supplier_id)
 
     if request.method == 'POST':
@@ -88,8 +100,11 @@ def update_supplier_view(request: HttpRequest, supplier_id: int):
 
     return render(request, 'supplier/update_supplier.html', {"supplier": supplier})
 
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def delete_supplier(request:HttpRequest, supplier_id):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
     
     try:
         Supplier.objects.get(pk = supplier_id).delete()

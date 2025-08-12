@@ -73,8 +73,11 @@
     </div>
 
     <div class="col-12 d-flex p-2">
+        {% if request.user.is_superuser %}
         <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal"
             type="button">Delete</button>
+        {% endif %}
+
         <a href="{% url 'product:update_product_view' product.id %}" style="margin-left: 20px;"><button
                 class="btn btn-outline-warning">Update</button></a>
     </div>

@@ -18,3 +18,9 @@ def sign_in_view(request:HttpRequest):
             return redirect('accounts:sign_in_view')
     
     return render(request, 'accounts/sign_in.html', {})
+
+
+def log_out(request:HttpRequest):
+    
+    logout(request)
+    return redirect('main:index_view')

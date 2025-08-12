@@ -1,0 +1,246 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block title %} Reports {% endblock title %}
+
+{% block content %}
+<div class="row p-4 m-0">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {{message.tags}}" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<div class="row p-4 m-0 g-4">
+    <div class="col-10">
+        <h3>Reports and Analytics</h3>
+    </div>
+    <div class="col-2 text-end">
+        <a href=""><button class="btn btn_style"><svg xmlns="http://www.w3.org/2000/svg" width="20" fill="currentColor"
+                    class="bi bi-envelope-arrow-up" viewBox="0 0 16 16">
+                    <path
+                        d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4.5a.5.5 0 0 1-1 0V5.383l-7 4.2-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h5.5a.5.5 0 0 1 0 1H2a2 2 0 0 1-2-1.99zm1 7.105 4.708-2.897L1 5.383zM1 4v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1" />
+                    <path
+                        d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.354-5.354 1.25 1.25a.5.5 0 0 1-.708.708L13 12.207V14a.5.5 0 0 1-1 0v-1.717l-.28.305a.5.5 0 0 1-.737-.676l1.149-1.25a.5.5 0 0 1 .722-.016" />
+                </svg></button></a>
+    </div>
+    <div class="col-12 card p-4">
+        <div class="card-title">
+            <h4>Products that have reached the alert level</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>quantity in stock</th>
+                        <th>min quantity alert</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in low_stock_products %}
+                    <tr>
+                        <td>{{product.name}}</td>
+                        <td>{{product.quantity_in_stock}}</td>
+                        <td>{{product.min_quantity_alert}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="text-center w-100">
+                {% if low_stock_products.has_previous %}
+                <a href="?page={{ low_stock_products.previous_page_number }}" class="btn"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                        <path
+                            d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                    </svg> previous</a>
+                {% endif %}
+                <span>{{ low_stock_products.number }}</span>
+                <span>from</span>
+                <span>{{ low_stock_products.paginator.num_pages }}</span>
+                {% if low_stock_products.has_next %}
+                <a href="?page={{ low_stock_products.next_page_number }}" class="btn">next <svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                        <path
+                            d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                    </svg></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 p-2 mt-2">
+        <div class="card p-4">
+            <div class="card-title">
+                <h4>Cost value of all products in stock</h4>
+            </div>
+            <div class="card-text center_content">
+                <p style="font-size: 30px; font-weight: bold;">
+                    {{ stock_value.total_value }} SAR
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 p-2  mt-2">
+        <div class="card p-4">
+            <div class="card-title">
+                <h4>Net profit from all previous sales</h4>
+            </div>
+            <div class="card-text center_content">
+                <p style="font-size: 30px; font-weight: bold;">
+                    {{ profits.total_profit }} SAR
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 p-2 mt-2">
+        <div class="card p-4 h-100">
+            <div class="card-title">
+                <h4>Top 10 Best Selling Products</h4>
+            </div>
+            <div class="card-text center_content">
+                <canvas id="topProductsChart" width="600" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 p-2 mt-2">
+        <div class="card p-4  h-100">
+            <div class="card-title">
+                <h4>Compare purchases and sales for each product</h4>
+            </div>
+            <div class="card-text center_content">
+                <canvas id="salesVsPurchasesChart" width="600" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-12 card p-4">
+        <div class="card-title">
+            <h4>Top 10 suppliers we have ordered from</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>supplier name</th>
+                        <th>total orders</th>
+                        <th>total amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in top_suppliers %}
+                    <tr>
+                        <td>{{s.supplier__name}}</td>
+                        <td>{{s.total_orders}}</td>
+                        <td>{{s.total_amount}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+    const topProductsData = JSON.parse('{{ top_products_json|escapejs }}');
+
+    const labels = topProductsData.map(item => item.product__name);
+    const data = topProductsData.map(item => item.total_sold);
+
+    const ctx = document.getElementById('topProductsChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sales quantity',
+                data: data,
+                borderColor: 'rgba(0, 172, 154, 1)',
+                backgroundColor: 'rgba(0, 172, 154, 1',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Product Name'
+                    }
+                }
+            }
+        }
+    });
+
+
+    const data_sales_purchase = JSON.parse('{{ sales_vs_purchases_json|escapejs }}');
+
+    const labels_sales_purchase = data_sales_purchase.map(item => item.name);
+    const soldData = data_sales_purchase.map(item => item.total_sold || 0);
+    const purchasedData = data_sales_purchase.map(item => item.total_purchased || 0);
+
+    const ctx_sales_purchase = document.getElementById('salesVsPurchasesChart').getContext('2d');
+
+    const chart_sales_purchase = new Chart(ctx_sales_purchase, {
+        type: 'bar',
+        data: {
+            labels: labels_sales_purchase,
+            datasets: [
+                {
+                    label: 'Sales',
+                    data: soldData,
+                    backgroundColor: 'rgba(0, 172, 154, 1',
+                    borderColor: 'rgba(0, 172, 154, 1',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Purchases',
+                    data: purchasedData,
+                    backgroundColor: '#555cb8',
+                    borderColor: '#555cb8',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Product'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock content %}

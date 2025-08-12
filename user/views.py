@@ -3,7 +3,12 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.http import HttpRequest
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
+
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def all_users(request):
     if request.method == 'POST':
         search = request.POST.get('search', '')
@@ -22,8 +27,12 @@ def all_users(request):
     number_of_users = users.count()
     return render(request, 'user/all_users.html', {"users": users, 'number_of_users':number_of_users})
 
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def add_user_view(request:HttpRequest):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+    
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -49,9 +58,12 @@ def add_user_view(request:HttpRequest):
 
     return render(request, 'user/add_user.html')
 
-
-# تعديل مستخدم
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def update_user_view(request:HttpRequest, user_id):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+
     user = get_object_or_404(User, pk=user_id)
 
     if request.method == 'POST':
@@ -83,3 +95,19 @@ def update_user_view(request:HttpRequest, user_id):
         return redirect('user:all_users_view')
 
     return render(request, 'user/update_user.html', {"user_obj": user})
+
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
+def delete_user(request:HttpRequest, user_id):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+    
+    try:
+        User.objects.get(pk = user_id).delete()
+        messages.success(request, 'The User has been successfully removed.', 'alert-success')
+        return redirect('user:all_users_view')
+
+    except Exception as e:
+        messages.error(request, 'An error occurred while deleting.', 'alert-danger')
+        return redirect('user:all_users_view')
+    

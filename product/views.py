@@ -5,9 +5,14 @@ from django.db.models import Sum, F
 from django.contrib import messages
 from django.core.paginator import Paginator
 from supplier.models import Supplier
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def all_products_view(request:HttpRequest):
     
     if request.method == 'POST':
@@ -34,7 +39,7 @@ def all_products_view(request:HttpRequest):
     
     # pagination
     page = request.GET.get('page', 1)
-    paginator = Paginator(products, 2)
+    paginator = Paginator(products, 8)
     products = paginator.get_page(page)
     
     print(paginator)
@@ -47,6 +52,8 @@ def all_products_view(request:HttpRequest):
     }
     return render(request, 'product/all_products.html', context)
 
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def add_product_view(request:HttpRequest):
     
     if request.method == 'POST':
@@ -116,14 +123,19 @@ def add_product_view(request:HttpRequest):
     all_supplier = Supplier.objects.all()
     return render(request, 'product/add_product.html', {'all_categories': all_categories, 'all_supplier':all_supplier})
 
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def product_detail_view(request:HttpRequest, product_id):
     
     product = Product.objects.get(pk = product_id)
     
     return render(request, 'product/detail.html', {'product':product})
 
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def delete_product(request:HttpRequest, product_id):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
     
     try:
         Product.objects.get(pk = product_id).delete()
@@ -134,6 +146,8 @@ def delete_product(request:HttpRequest, product_id):
         messages.error(request, 'An error occurred while deleting.', 'alert-danger')
         return redirect('product:all_products_view')
     
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def update_product_view(request:HttpRequest, product_id:int):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -207,13 +221,19 @@ def update_product_view(request:HttpRequest, product_id:int):
 
 
 # Category --
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def all_category_view(request: HttpRequest):
     categories = Category.objects.all().order_by('-created_at')
     return render(request, 'product/all_category.html', {"categories": categories})
 
 
-# إضافة فئة
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def add_category_view(request: HttpRequest):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+    
     if request.method == 'POST':
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -232,8 +252,12 @@ def add_category_view(request: HttpRequest):
 
     return render(request, 'product/add_category.html')
 
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def update_category_view(request: HttpRequest, category_id: int):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
+    
     category = get_object_or_404(Category, pk=category_id)
 
     if request.method == 'POST':
@@ -257,9 +281,11 @@ def update_category_view(request: HttpRequest, category_id: int):
 
     return render(request, 'product/update_category.html', {"category": category})
 
-
-
+@login_required(login_url='accounts/sign_in/')
+@staff_member_required
 def delete_category(request:HttpRequest, category_id):
+    if not request.user.is_superuser:
+        return render(request, "main/index.html", {"show_permission_modal": True})
     
     try:
         Category.objects.get(pk = category_id).delete()
@@ -269,3 +295,5 @@ def delete_category(request:HttpRequest, category_id):
     except Exception as e:
         messages.error(request, 'An error occurred while deleting.', 'alert-danger')
         return redirect('product:all_category_view')
+    
+ 
